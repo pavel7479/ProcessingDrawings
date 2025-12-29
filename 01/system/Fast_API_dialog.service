@@ -1,0 +1,29 @@
+[Unit]
+Description=Fast_API_dialog Application
+After=network.target
+
+[Service]
+User=root
+WorkingDirectory=/root/Fast_API_dialog
+
+# Переменные окружения для Prompts
+Environment=SYSTEM_PROMPT_PATH=/root/Fast_API_dialog/prompts/system_prompt.txt
+Environment=USER_PROMPT_PATH=/root/Fast_API_dialog/prompts/user_prompt.txt
+
+# CUDA и Python пути
+Environment=CUDA_VISIBLE_DEVICES=0
+Environment=LD_LIBRARY_PATH=/usr/local/cuda/lib64
+Environment=PYTHONPATH=/root/Fast_API_dialog/app
+
+# Сохраняем env для отладки
+ExecStartPre=/bin/sh -c 'printenv > /tmp/env_dump.txt'
+
+# Запуск FastAPI через uvicorn
+ExecStart=/root/Fast_API_dialog/.venv/bin/python3 -m uvicorn app.main:app --host 0.0.0.0 --port 8000
+
+Restart=always
+RestartSec=5s
+
+[Install]
+WantedBy=multi-user.target
+
